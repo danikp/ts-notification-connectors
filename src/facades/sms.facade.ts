@@ -8,6 +8,18 @@ import { PlivoSmsConnector } from '../connectors/plivo';
 import type { PlivoConfig } from '../connectors/plivo';
 import { SnsSmsConnector } from '../connectors/sns';
 import type { SnsConfig } from '../connectors/sns';
+import { SinchSmsConnector } from '../connectors/sinch';
+import type { SinchConfig } from '../connectors/sinch';
+import { TelnyxSmsConnector } from '../connectors/telnyx';
+import type { TelnyxConfig } from '../connectors/telnyx';
+import { InfobipSmsConnector } from '../connectors/infobip';
+import type { InfobipConfig } from '../connectors/infobip';
+import { MessageBirdSmsConnector } from '../connectors/messagebird';
+import type { MessageBirdConfig } from '../connectors/messagebird';
+import { TextmagicSmsConnector } from '../connectors/textmagic';
+import type { TextmagicConfig } from '../connectors/textmagic';
+import { D7NetworksSmsConnector } from '../connectors/d7networks';
+import type { D7NetworksConfig } from '../connectors/d7networks';
 
 export class Sms implements ISmsProvider {
   readonly id: string;
@@ -19,9 +31,25 @@ export class Sms implements ISmsProvider {
   constructor(providerId: SmsProviderIdEnum.Twilio, config: TwilioConfig);
   constructor(providerId: SmsProviderIdEnum.Plivo, config: PlivoConfig);
   constructor(providerId: SmsProviderIdEnum.SNS, config: SnsConfig);
+  constructor(providerId: SmsProviderIdEnum.Sinch, config: SinchConfig);
+  constructor(providerId: SmsProviderIdEnum.Telnyx, config: TelnyxConfig);
+  constructor(providerId: SmsProviderIdEnum.Infobip, config: InfobipConfig);
+  constructor(providerId: SmsProviderIdEnum.MessageBird, config: MessageBirdConfig);
+  constructor(providerId: SmsProviderIdEnum.Textmagic, config: TextmagicConfig);
+  constructor(providerId: SmsProviderIdEnum.D7Networks, config: D7NetworksConfig);
   constructor(
     providerIdOrConnector: SmsProviderIdEnum | ISmsProvider,
-    config?: VonageConfig | TwilioConfig | PlivoConfig | SnsConfig,
+    config?:
+      | VonageConfig
+      | TwilioConfig
+      | PlivoConfig
+      | SnsConfig
+      | SinchConfig
+      | TelnyxConfig
+      | InfobipConfig
+      | MessageBirdConfig
+      | TextmagicConfig
+      | D7NetworksConfig,
   ) {
     if (typeof providerIdOrConnector === 'object') {
       this.connector = providerIdOrConnector;
@@ -42,6 +70,24 @@ export class Sms implements ISmsProvider {
         break;
       case SmsProviderIdEnum.SNS:
         this.connector = new SnsSmsConnector(config as SnsConfig);
+        break;
+      case SmsProviderIdEnum.Sinch:
+        this.connector = new SinchSmsConnector(config as SinchConfig);
+        break;
+      case SmsProviderIdEnum.Telnyx:
+        this.connector = new TelnyxSmsConnector(config as TelnyxConfig);
+        break;
+      case SmsProviderIdEnum.Infobip:
+        this.connector = new InfobipSmsConnector(config as InfobipConfig);
+        break;
+      case SmsProviderIdEnum.MessageBird:
+        this.connector = new MessageBirdSmsConnector(config as MessageBirdConfig);
+        break;
+      case SmsProviderIdEnum.Textmagic:
+        this.connector = new TextmagicSmsConnector(config as TextmagicConfig);
+        break;
+      case SmsProviderIdEnum.D7Networks:
+        this.connector = new D7NetworksSmsConnector(config as D7NetworksConfig);
         break;
       default:
         throw new Error(`Unsupported SMS provider: ${providerIdOrConnector as string}`);

@@ -6,16 +6,34 @@ import { VonageSmsConnector } from '../connectors/vonage';
 import { TwilioSmsConnector } from '../connectors/twilio';
 import { PlivoSmsConnector } from '../connectors/plivo';
 import { SnsSmsConnector } from '../connectors/sns';
+import { SinchSmsConnector } from '../connectors/sinch';
+import { TelnyxSmsConnector } from '../connectors/telnyx';
+import { InfobipSmsConnector } from '../connectors/infobip';
+import { MessageBirdSmsConnector } from '../connectors/messagebird';
+import { TextmagicSmsConnector } from '../connectors/textmagic';
+import { D7NetworksSmsConnector } from '../connectors/d7networks';
 
 vi.mock('../connectors/vonage');
 vi.mock('../connectors/twilio');
 vi.mock('../connectors/plivo');
 vi.mock('../connectors/sns');
+vi.mock('../connectors/sinch');
+vi.mock('../connectors/telnyx');
+vi.mock('../connectors/infobip');
+vi.mock('../connectors/messagebird');
+vi.mock('../connectors/textmagic');
+vi.mock('../connectors/d7networks');
 
 const MockedVonage = vi.mocked(VonageSmsConnector);
 const MockedTwilio = vi.mocked(TwilioSmsConnector);
 const MockedPlivo = vi.mocked(PlivoSmsConnector);
 const MockedSns = vi.mocked(SnsSmsConnector);
+const MockedSinch = vi.mocked(SinchSmsConnector);
+const MockedTelnyx = vi.mocked(TelnyxSmsConnector);
+const MockedInfobip = vi.mocked(InfobipSmsConnector);
+const MockedMessageBird = vi.mocked(MessageBirdSmsConnector);
+const MockedTextmagic = vi.mocked(TextmagicSmsConnector);
+const MockedD7Networks = vi.mocked(D7NetworksSmsConnector);
 
 const smsOptions: ISmsOptions = {
   to: '+1234567890',
@@ -58,6 +76,54 @@ describe('Sms facade', () => {
 
     expect(facade.id).toBe('sns');
     expect(MockedSns).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate SinchSmsConnector for Sinch provider ID', () => {
+    const config = { servicePlanId: 'plan', apiToken: 'token', from: '+10000000000' };
+    const facade = new Sms(SmsProviderIdEnum.Sinch, config);
+
+    expect(facade.id).toBe('sinch');
+    expect(MockedSinch).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate TelnyxSmsConnector for Telnyx provider ID', () => {
+    const config = { apiKey: 'KEY_test', from: '+10000000000' };
+    const facade = new Sms(SmsProviderIdEnum.Telnyx, config);
+
+    expect(facade.id).toBe('telnyx');
+    expect(MockedTelnyx).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate InfobipSmsConnector for Infobip provider ID', () => {
+    const config = { apiKey: 'key', baseUrl: 'api.infobip.com', from: 'InfoSMS' };
+    const facade = new Sms(SmsProviderIdEnum.Infobip, config);
+
+    expect(facade.id).toBe('infobip');
+    expect(MockedInfobip).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate MessageBirdSmsConnector for MessageBird provider ID', () => {
+    const config = { accessKey: 'key', from: 'MsgBird' };
+    const facade = new Sms(SmsProviderIdEnum.MessageBird, config);
+
+    expect(facade.id).toBe('messagebird');
+    expect(MockedMessageBird).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate TextmagicSmsConnector for Textmagic provider ID', () => {
+    const config = { username: 'user', apiKey: 'key' };
+    const facade = new Sms(SmsProviderIdEnum.Textmagic, config);
+
+    expect(facade.id).toBe('textmagic');
+    expect(MockedTextmagic).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate D7NetworksSmsConnector for D7Networks provider ID', () => {
+    const config = { apiToken: 'token', from: 'D7' };
+    const facade = new Sms(SmsProviderIdEnum.D7Networks, config);
+
+    expect(facade.id).toBe('d7networks');
+    expect(MockedD7Networks).toHaveBeenCalledWith(config);
   });
 
   it('should accept a custom ISmsProvider connector', () => {
