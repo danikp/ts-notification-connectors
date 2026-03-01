@@ -49,3 +49,4 @@ await apns.sendMessage({
 - **Format:** JSON
 - **Response:** HTTP 200 with empty body; `apns-id` in response header
 - **Provider ID:** `apns` (matches `PushProviderIdEnum.APNS`)
+- **API Reference:** [APNs REST API](https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns)

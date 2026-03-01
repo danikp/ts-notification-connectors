@@ -37,3 +37,4 @@ Use `_passthrough.body` for Mailgun-specific fields. Note: Mailgun options use p
 - **Auth:** HTTP Basic (`api:{apiKey}`)
 - **Format:** `application/x-www-form-urlencoded` (or `multipart/form-data` with attachments)
 - **Provider ID:** `mailgun` (matches `EmailProviderIdEnum.Mailgun`)
+- **API Reference:** [Mailgun Messages API](https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Messages/)

@@ -13,6 +13,11 @@ src/
 ├── types/                # Novu-compatible interfaces and enums
 │   └── provider-id.enum.ts  # EmailProviderIdEnum, SmsProviderIdEnum, PushProviderIdEnum, ChatProviderIdEnum
 ├── utils/                # ConnectorError, casing transforms, deep merge
+├── facades/              # Channel facades — unified entry point per channel
+│   ├── email.facade.ts   # Email facade (SES, Resend, Mailgun)
+│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS)
+│   ├── push.facade.ts    # Push facade (FCM, Expo, APNs)
+│   └── chat.facade.ts    # Chat facade (Telegram, Slack, WhatsApp)
 └── connectors/
     ├── ses/              # AWS SES v2 email
     ├── resend/           # Resend email
@@ -27,6 +32,36 @@ src/
     ├── telegram/         # Telegram chat
     ├── slack/            # Slack chat
     └── whatsapp/         # WhatsApp Business chat
+```
+
+## Channel Facades
+
+Four facade classes provide a unified entry point per notification channel, accepting either a provider ID enum + config or a custom connector instance:
+
+- `Email` (`src/facades/email.facade.ts`) — wraps SES, Resend, Mailgun; also delegates `checkIntegration` (returns success fallback if connector doesn't implement it)
+- `Sms` (`src/facades/sms.facade.ts`) — wraps Vonage, Twilio, Plivo, SNS
+- `Push` (`src/facades/push.facade.ts`) — wraps FCM, Expo, APNs
+- `Chat` (`src/facades/chat.facade.ts`) — wraps Telegram, Slack, WhatsApp
+
+### Design
+
+- **Per-enum-value constructor overloads** — TypeScript enforces that the config type matches the provider ID at compile time (e.g., `new Email(EmailProviderIdEnum.SES, sesConfig)` requires `SesConfig`)
+- **Custom connector overload** — first overload accepts any `IEmailProvider` / `ISmsProvider` / etc., enabling custom connectors without facade changes
+- **No BaseProvider inheritance** — facades don't need casing transforms; they implement the channel interface directly and delegate all calls
+- **`id` and `channelType`** — set from the provider ID when using enum+config, or copied from the connector instance
+
+### Usage
+
+```ts
+import { Email, EmailProviderIdEnum } from 'ts-notification-connectors';
+
+// Provider ID + config (type-safe):
+const email = new Email(EmailProviderIdEnum.SES, sesConfig);
+await email.sendMessage(options);
+
+// Custom connector:
+const email = new Email(myCustomConnector);
+await email.sendMessage(options);
 ```
 
 ## Interface Compatibility

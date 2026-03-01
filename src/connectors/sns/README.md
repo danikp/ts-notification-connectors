@@ -30,3 +30,4 @@ Use `_passthrough.body` to add SNS-specific parameters like `MessageAttributes` 
 - **Auth:** AWS Signature V4 via `aws4`
 - **Format:** `application/x-www-form-urlencoded`
 - **Provider ID:** `sns` (matches `SmsProviderIdEnum.SNS`)
+- **API Reference:** [AWS SNS Publish API](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html)

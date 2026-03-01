@@ -40,3 +40,4 @@ Use `_passthrough.body` for additional Expo fields like `priority`, `ttl`, `chan
 - **Format:** JSON
 - **Token format:** `ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]`
 - **Provider ID:** `expo` (matches `PushProviderIdEnum.EXPO`)
+- **API Reference:** [Expo Push Notifications API](https://docs.expo.dev/push-notifications/sending-notifications/)

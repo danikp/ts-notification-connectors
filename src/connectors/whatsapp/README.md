@@ -25,3 +25,4 @@ Use `_passthrough.body` to add WhatsApp-specific fields like `template`, `intera
 - **Auth:** Bearer token
 - **Format:** JSON
 - **Provider ID:** `whatsapp-business` (matches `ChatProviderIdEnum.WhatsAppBusiness`)
+- **API Reference:** [WhatsApp Cloud API — Messages](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages)

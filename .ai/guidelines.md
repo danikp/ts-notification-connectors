@@ -21,6 +21,11 @@ src/
 ├── types/                # Novu-compatible interfaces and enums (barrel: types/index.ts)
 │   └── provider-id.enum.ts  # EmailProviderIdEnum, SmsProviderIdEnum, PushProviderIdEnum, ChatProviderIdEnum
 ├── utils/                # ConnectorError, casing transforms, deep merge (barrel: utils/index.ts)
+├── facades/              # Channel facades — unified entry point per channel (barrel: facades/index.ts)
+│   ├── email.facade.ts   # Email facade (SES, Resend, Mailgun)
+│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS)
+│   ├── push.facade.ts    # Push facade (FCM, Expo, APNs)
+│   └── chat.facade.ts    # Chat facade (Telegram, Slack, WhatsApp)
 └── connectors/
     ├── ses/              # AWS SES v2 email — each has *.connector.ts, *.config.ts, *.types.ts, *.connector.spec.ts
     ├── resend/           # Resend email
@@ -40,6 +45,26 @@ src/
 Dual CJS/ESM build output in `dist/cjs/` and `dist/esm/`.
 
 ## Architecture
+
+### Channel Facades
+
+Four facade classes (`Email`, `Sms`, `Push`, `Chat`) provide a unified entry point per channel. Each accepts either a provider ID enum + config or a custom connector instance:
+
+```ts
+import { Email, EmailProviderIdEnum } from 'ts-notification-connectors';
+const email = new Email(EmailProviderIdEnum.SES, sesConfig);
+await email.sendMessage(options);
+
+// or bring your own connector:
+const email = new Email(customConnector);
+```
+
+Per-enum-value constructor overloads enforce type-safe config matching at compile time. Facades implement the channel interface directly (no BaseProvider inheritance) and delegate all calls to the underlying connector.
+
+- `Email` — SES, Resend, Mailgun (also forwards `checkIntegration` when available)
+- `Sms` — Vonage, Twilio, Plivo, SNS
+- `Push` — FCM, Expo, APNs
+- `Chat` — Telegram, Slack, WhatsApp
 
 ### Interface Compatibility
 
@@ -96,18 +121,19 @@ Abstract class providing:
 - Key rules: `consistent-type-imports: error`, `no-explicit-any: warn`, `no-unused-vars` with `_` pattern
 
 ### Naming
-- Classes: `*Connector` (not `*Provider`)
+- Classes: `*Connector` (not `*Provider`) for connectors; channel facades use bare names (`Email`, `Sms`, `Push`, `Chat`)
 - Config interfaces: `{Name}Config` (e.g., `TwilioConfig`, `ApnsConfig`)
 - IDs match Novu enums: `'ses'`, `'resend'`, `'mailgun'`, `'nexmo'`, `'twilio'`, `'plivo'`, `'sns'`, `'fcm'`, `'expo'`, `'apns'`, `'telegram'`, `'slack'`, `'whatsapp-business'`
-- Files: `kebab-case` with connector prefix (e.g., `twilio.connector.ts`, `apns.auth.ts`)
+- Files: `kebab-case` with connector prefix (e.g., `twilio.connector.ts`, `apns.auth.ts`); facades use `{channel}.facade.ts`
 
 ### Error Handling
 - All API failures throw `ConnectorError` with `statusCode`, `providerCode`, `providerMessage`, `cause`
 - Use `axios.isAxiosError()` for HTTP errors (APNs uses `http2` — errors handled in stream callbacks)
 
 ### Testing
-- Colocated: `*.connector.spec.ts` next to implementation
+- Colocated: `*.connector.spec.ts` next to implementation; facade tests use `*.facade.spec.ts`
 - Mock `axios`, `http2`, and auth modules (`aws4`, `fcm.auth`, `apns.auth`) at module level
+- Facade tests mock connector modules (`vi.mock('../connectors/ses')`, etc.) and verify delegation
 - No real API calls — vitest with `globals: true`
 
 ### Dependencies

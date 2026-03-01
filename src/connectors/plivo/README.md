@@ -35,3 +35,4 @@ Use `_passthrough.body` to add Plivo-specific fields like `url` (callback), `met
 - **Auth:** HTTP Basic (`AuthID:AuthToken`)
 - **Format:** JSON
 - **Provider ID:** `plivo` (matches `SmsProviderIdEnum.Plivo`)
+- **API Reference:** [Plivo Messages API](https://www.plivo.com/docs/sms/api/message)

@@ -51,3 +51,4 @@ Pass `android`, `apns`, `fcmOptions`, and `webPush` through `overrides` for plat
 - **Endpoint:** `POST https://fcm.googleapis.com/v1/projects/{projectId}/messages:send`
 - **Auth:** OAuth2 Bearer token from service account JWT
 - **Provider ID:** `fcm` (matches `PushProviderIdEnum.FCM`)
+- **API Reference:** [Firebase Cloud Messaging HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send)

@@ -25,3 +25,4 @@ Use `_passthrough.body` to add Slack-specific fields like `blocks`, `attachments
 - **Auth:** None (URL is auth)
 - **Format:** JSON
 - **Provider ID:** `slack` (matches `ChatProviderIdEnum.Slack`)
+- **API Reference:** [Slack Incoming Webhooks](https://api.slack.com/messaging/webhooks)

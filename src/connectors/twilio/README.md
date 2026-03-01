@@ -27,3 +27,4 @@ Use `_passthrough.body` to add Twilio-specific fields like `StatusCallback` or `
 - **Format:** `application/x-www-form-urlencoded`
 - **Response:** JSON (via `.json` suffix on URL)
 - **Provider ID:** `twilio` (matches `SmsProviderIdEnum.Twilio`)
+- **API Reference:** [Twilio Messages API](https://www.twilio.com/docs/messaging/api/message-resource)

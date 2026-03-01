@@ -22,9 +22,10 @@
 ## Naming
 
 - Connector classes: `*Connector` (not `*Provider`) to avoid confusion with Novu classes
+- Channel facade classes: bare channel names (`Email`, `Sms`, `Push`, `Chat`)
 - `id` values match Novu provider enums exactly: `'ses'`, `'resend'`, `'mailgun'`, `'nexmo'`, `'twilio'`, `'plivo'`, `'sns'`, `'fcm'`, `'expo'`, `'apns'`, `'telegram'`, `'slack'`, `'whatsapp-business'`
 - Config interfaces: `SesConfig`, `ResendConfig`, `MailgunConfig`, `VonageConfig`, `TwilioConfig`, `PlivoConfig`, `SnsConfig`, `FcmConfig`, `ExpoConfig`, `ApnsConfig`, `TelegramConfig`, `SlackConfig`, `WhatsAppConfig`
-- Files: `kebab-case` with connector name prefix (e.g., `ses.connector.ts`, `fcm.auth.ts`, `apns.auth.ts`)
+- Files: `kebab-case` with connector name prefix (e.g., `ses.connector.ts`, `fcm.auth.ts`, `apns.auth.ts`); facades use `{channel}.facade.ts` (e.g., `email.facade.ts`)
 
 ## Error Handling
 
@@ -34,16 +35,17 @@
 
 ## Testing
 
-- Colocated test files: `*.connector.spec.ts` next to implementation
+- Colocated test files: `*.connector.spec.ts` next to implementation; facade tests use `*.facade.spec.ts`
 - Mock `axios` and external modules (`aws4`, `fcm.auth`, `apns.auth`, `http2`) at module level
+- Facade tests mock connector modules (`vi.mock('../connectors/ses')`, etc.) and verify correct instantiation + delegation
 - No real API calls in tests
 - Test framework: vitest with `globals: true`
 
 ## Provider ID Enums
 
 - `src/types/provider-id.enum.ts` must only contain IDs for implemented connectors
-- When adding a new connector, add its ID to the appropriate enum
-- When removing a connector, remove its ID
+- When adding a new connector, add its ID to the appropriate enum and add a constructor overload + switch case to the corresponding channel facade
+- When removing a connector, remove its ID and the corresponding facade overload/case
 
 ## Dependencies
 

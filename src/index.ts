@@ -1,6 +1,7 @@
 export * from './types';
 export { BaseProvider, CasingEnum } from './base.provider';
 export { ConnectorError } from './utils';
+export { Email, Sms, Push, Chat } from './facades';
 export { SesEmailConnector, SesConfig } from './connectors/ses';
 export { ResendEmailConnector, ResendConfig } from './connectors/resend';
 export { MailgunEmailConnector, MailgunConfig } from './connectors/mailgun';

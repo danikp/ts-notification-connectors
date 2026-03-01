@@ -26,3 +26,4 @@ Use `_passthrough.body` to add fields like `callback` or `client-ref` to the for
 - **Auth:** `api_key` + `api_secret` in request body
 - **Format:** `application/x-www-form-urlencoded`
 - **Provider ID:** `nexmo` (matches `SmsProviderIdEnum.Nexmo`)
+- **API Reference:** [Vonage SMS API](https://developer.vonage.com/en/api/sms)

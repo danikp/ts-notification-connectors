@@ -57,3 +57,4 @@ Use `_passthrough.body` to add fields like `FeedbackForwardingEmailAddress` or `
 - **Endpoint:** `POST https://email.{region}.amazonaws.com/v2/email/outbound-emails`
 - **Auth:** AWS Signature V4 via `aws4`
 - **Provider ID:** `ses` (matches `EmailProviderIdEnum.SES`)
+- **API Reference:** [AWS SES v2 API](https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_SendEmail.html)

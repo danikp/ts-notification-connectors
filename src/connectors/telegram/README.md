@@ -21,3 +21,4 @@ Use `_passthrough.body` to add Telegram-specific fields like `disable_notificati
 - **Auth:** Bot token in URL path
 - **Format:** JSON
 - **Provider ID:** `telegram` (matches `ChatProviderIdEnum.Telegram`)
+- **API Reference:** [Telegram Bot API — sendMessage](https://core.telegram.org/bots/api#sendmessage)

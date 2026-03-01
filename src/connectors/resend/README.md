@@ -30,3 +30,4 @@ Use `_passthrough.body` to add Resend-specific fields like `tags`, `scheduled_at
 - **Auth:** Bearer token
 - **Format:** JSON
 - **Provider ID:** `resend` (matches `EmailProviderIdEnum.Resend`)
+- **API Reference:** [Resend Send Email API](https://resend.com/docs/api-reference/emails/send-email)
