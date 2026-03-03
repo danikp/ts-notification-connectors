@@ -21,6 +21,10 @@ export enum SmsProviderIdEnum {
   MessageBird = 'messagebird',
   Textmagic = 'textmagic',
   D7Networks = 'd7networks',
+  Unicell = 'unicell',
+  SLNG = 'slng',
+  Unforu = 'unforu',
+  Cellact = 'cellact',
 }
 
 export enum PushProviderIdEnum {

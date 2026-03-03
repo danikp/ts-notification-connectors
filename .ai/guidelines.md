@@ -2,7 +2,7 @@
 
 ## Overview
 
-ts-notification-connectors — lightweight, SDK-free notification connectors for email (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost), SMS (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks), push (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush), and chat (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE). Drop-in replacement for `@novu/providers` using direct HTTP calls via `axios` instead of vendor SDKs. Runtime deps: `axios` + `aws4` only.
+ts-notification-connectors — lightweight, SDK-free notification connectors for email (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost), SMS (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, InforU, Cellact), push (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush), and chat (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE). Drop-in replacement for `@novu/providers` using direct HTTP calls via `axios` instead of vendor SDKs. Runtime deps: `axios` + `aws4` only.
 
 ## Commands
 
@@ -23,7 +23,7 @@ src/
 ├── utils/                # ConnectorError, casing transforms, deep merge (barrel: utils/index.ts)
 ├── facades/              # Channel facades — unified entry point per channel (barrel: facades/index.ts)
 │   ├── email.facade.ts   # Email facade (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost)
-│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks)
+│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, InforU, Cellact)
 │   ├── push.facade.ts    # Push facade (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush)
 │   └── chat.facade.ts    # Chat facade (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE)
 └── connectors/
@@ -46,6 +46,10 @@ src/
     ├── messagebird/      # MessageBird SMS
     ├── textmagic/        # Textmagic SMS
     ├── d7networks/       # D7 Networks SMS
+    ├── unicell/          # Unicell (Soprano) SMS
+    ├── slng/             # SLNG SMS
+    ├── unforu/           # InforU SMS
+    ├── cellact/          # Cellact SMS
     ├── fcm/              # Firebase Cloud Messaging push
     ├── expo/             # Expo push
     ├── apns/             # Apple Push Notification service (HTTP/2, ES256 JWT)
@@ -86,7 +90,7 @@ const email = new Email(customConnector);
 Per-enum-value constructor overloads enforce type-safe config matching at compile time. Facades implement the channel interface directly (no BaseProvider inheritance) and delegate all calls to the underlying connector.
 
 - `Email` — SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost (also forwards `checkIntegration` when available)
-- `Sms` — Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks
+- `Sms` — Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, InforU, Cellact
 - `Push` — FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush
 - `Chat` — Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE
 
@@ -94,14 +98,14 @@ Per-enum-value constructor overloads enforce type-safe config matching at compil
 
 All connectors implement Novu's `@novu/stateless` interfaces:
 - `IEmailProvider` — `SesEmailConnector`, `ResendEmailConnector`, `MailgunEmailConnector`, `SendgridEmailConnector`, `PostmarkEmailConnector`, `MailerSendEmailConnector`, `MailtrapEmailConnector`, `BrevoEmailConnector`, `SparkPostEmailConnector`
-- `ISmsProvider` — `VonageSmsConnector`, `TwilioSmsConnector`, `PlivoSmsConnector`, `SnsSmsConnector`, `SinchSmsConnector`, `TelnyxSmsConnector`, `InfobipSmsConnector`, `MessageBirdSmsConnector`, `TextmagicSmsConnector`, `D7NetworksSmsConnector`
+- `ISmsProvider` — `VonageSmsConnector`, `TwilioSmsConnector`, `PlivoSmsConnector`, `SnsSmsConnector`, `SinchSmsConnector`, `TelnyxSmsConnector`, `InfobipSmsConnector`, `MessageBirdSmsConnector`, `TextmagicSmsConnector`, `D7NetworksSmsConnector`, `UnicellSmsConnector`, `SlngSmsConnector`, `UnforuSmsConnector`, `CellactSmsConnector`
 - `IPushProvider` — `FcmPushConnector`, `ExpoPushConnector`, `ApnsPushConnector`, `OneSignalPushConnector`, `PushoverPushConnector`, `PusherBeamsPushConnector`, `NtfyPushConnector`, `PushbulletPushConnector`, `WonderPushPushConnector`
 - `IChatProvider` — `TelegramChatConnector`, `SlackChatConnector`, `WhatsAppChatConnector`, `DiscordChatConnector`, `MsTeamsChatConnector`, `GoogleChatChatConnector`, `MattermostChatConnector`, `RocketChatChatConnector`, `LineChatConnector`
 
 ### BaseProvider Pattern
 
 Abstract class providing:
-1. **Key casing transform** — each connector declares `CasingEnum` (PASCAL_CASE for SES/SNS/Twilio/Postmark, CAMEL_CASE for Vonage/Expo/APNs/MS Teams/Infobip/MessageBird/Textmagic/Brevo/Pusher Beams/WonderPush/Rocket.Chat/LINE/Google Chat, SNAKE_CASE for FCM/Resend/Mailgun/SendGrid/Plivo/Sinch/Telnyx/OneSignal/Pushover/Telegram/Slack/WhatsApp/Discord/MailerSend/Mailtrap/SparkPost/D7 Networks/ntfy/Pushbullet/Mattermost)
+1. **Key casing transform** — each connector declares `CasingEnum` (PASCAL_CASE for SES/SNS/Twilio/Postmark/Unicell/SLNG, CAMEL_CASE for Vonage/Expo/APNs/MS Teams/Infobip/MessageBird/Textmagic/Brevo/Pusher Beams/WonderPush/Rocket.Chat/LINE/Google Chat, SNAKE_CASE for FCM/Resend/Mailgun/SendGrid/Plivo/Sinch/Telnyx/OneSignal/Pushover/Telegram/Slack/WhatsApp/Discord/MailerSend/Mailtrap/SparkPost/D7 Networks/ntfy/Pushbullet/Mattermost/InforU/Cellact)
 2. **Three-layer merge** — trigger data (lowest) → bridge known data (cased) → `_passthrough.body` (highest, raw)
 3. **Passthrough extraction** — returns `{ body, headers, query }`
 
@@ -126,8 +130,12 @@ Abstract class providing:
 | Telnyx       | Bearer token                  | JSON                       |
 | Infobip      | `App` auth prefix             | JSON (camelCase)           |
 | MessageBird  | `AccessKey` auth prefix       | JSON (camelCase)           |
-| Textmagic    | `X-TM-Username` + `X-TM-Key` | JSON (camelCase)           |
+| Textmagic    | `X-TM-Username` + `X-TM-Key`  | JSON (camelCase)           |
 | D7 Networks  | Bearer token                  | JSON                       |
+| Unicell      | Credentials in JSON body      | JSON (PascalCase)          |
+| SLNG         | Credentials in JSON body      | JSON URL-encoded as form   |
+| InforU       | Credentials in XML body       | XML via form param         |
+| Cellact      | Credentials as XML attributes | XML via form param         |
 | FCM          | OAuth2 Bearer (RS256 JWT)     | JSON                       |
 | Expo         | Bearer token (optional)       | JSON                       |
 | APNs         | Bearer JWT (ES256)            | JSON via HTTP/2            |
@@ -171,7 +179,7 @@ Abstract class providing:
 ### Naming
 - Classes: `*Connector` (not `*Provider`) for connectors; channel facades use bare names (`Email`, `Sms`, `Push`, `Chat`)
 - Config interfaces: `{Name}Config` (e.g., `TwilioConfig`, `ApnsConfig`)
-- IDs match Novu enums: `'ses'`, `'resend'`, `'mailgun'`, `'sendgrid'`, `'postmark'`, `'mailersend'`, `'mailtrap'`, `'brevo'`, `'sparkpost'`, `'nexmo'`, `'twilio'`, `'plivo'`, `'sns'`, `'sinch'`, `'telnyx'`, `'infobip'`, `'messagebird'`, `'textmagic'`, `'d7networks'`, `'fcm'`, `'expo'`, `'apns'`, `'one-signal'`, `'pushover'`, `'pusher-beams'`, `'ntfy'`, `'pushbullet'`, `'wonderpush'`, `'telegram'`, `'slack'`, `'whatsapp-business'`, `'discord'`, `'msteams'`, `'google-chat'`, `'mattermost'`, `'rocketchat'`, `'line'`
+- IDs match Novu enums: `'ses'`, `'resend'`, `'mailgun'`, `'sendgrid'`, `'postmark'`, `'mailersend'`, `'mailtrap'`, `'brevo'`, `'sparkpost'`, `'nexmo'`, `'twilio'`, `'plivo'`, `'sns'`, `'sinch'`, `'telnyx'`, `'infobip'`, `'messagebird'`, `'textmagic'`, `'d7networks'`, `'unicell'`, `'slng'`, `'unforu'`, `'cellact'`, `'fcm'`, `'expo'`, `'apns'`, `'one-signal'`, `'pushover'`, `'pusher-beams'`, `'ntfy'`, `'pushbullet'`, `'wonderpush'`, `'telegram'`, `'slack'`, `'whatsapp-business'`, `'discord'`, `'msteams'`, `'google-chat'`, `'mattermost'`, `'rocketchat'`, `'line'`
 - Files: `kebab-case` with connector prefix (e.g., `twilio.connector.ts`, `apns.auth.ts`); facades use `{channel}.facade.ts`
 
 ### Error Handling

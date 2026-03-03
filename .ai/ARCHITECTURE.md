@@ -2,7 +2,7 @@
 
 ## Overview
 
-ts-notification-connectors provides lightweight notification connectors for email (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost), SMS (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks), push (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush), and chat (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE). It replaces `@novu/providers` by implementing the same TypeScript interfaces but using direct HTTP calls instead of vendor SDKs.
+ts-notification-connectors provides lightweight notification connectors for email (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost), SMS (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, InforU, Cellact), push (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush), and chat (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE). It replaces `@novu/providers` by implementing the same TypeScript interfaces but using direct HTTP calls instead of vendor SDKs.
 
 ## Package Structure
 
@@ -15,7 +15,7 @@ src/
 ├── utils/                # ConnectorError, casing transforms, deep merge
 ├── facades/              # Channel facades — unified entry point per channel
 │   ├── email.facade.ts   # Email facade (SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost)
-│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks)
+│   ├── sms.facade.ts     # Sms facade (Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, InforU, Cellact)
 │   ├── push.facade.ts    # Push facade (FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush)
 │   └── chat.facade.ts    # Chat facade (Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE)
 └── connectors/
@@ -38,6 +38,10 @@ src/
     ├── messagebird/      # MessageBird SMS
     ├── textmagic/        # Textmagic SMS
     ├── d7networks/       # D7 Networks SMS
+    ├── unicell/          # Unicell (Soprano) SMS
+    ├── slng/             # SLNG SMS
+    ├── unforu/           # InforU SMS
+    ├── cellact/          # Cellact SMS
     ├── fcm/              # Firebase Cloud Messaging push
     ├── expo/             # Expo push
     ├── apns/             # Apple Push Notification service
@@ -63,7 +67,7 @@ src/
 Four facade classes provide a unified entry point per notification channel, accepting either a provider ID enum + config or a custom connector instance:
 
 - `Email` (`src/facades/email.facade.ts`) — wraps SES, Resend, Mailgun, SendGrid, Postmark, MailerSend, Mailtrap, Brevo, SparkPost; also delegates `checkIntegration` (returns success fallback if connector doesn't implement it)
-- `Sms` (`src/facades/sms.facade.ts`) — wraps Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks
+- `Sms` (`src/facades/sms.facade.ts`) — wraps Vonage, Twilio, Plivo, SNS, Sinch, Telnyx, Infobip, MessageBird, Textmagic, D7 Networks, Unicell, SLNG, Inforu, Cellact
 - `Push` (`src/facades/push.facade.ts`) — wraps FCM, Expo, APNs, OneSignal, Pushover, Pusher Beams, ntfy, Pushbullet, WonderPush
 - `Chat` (`src/facades/chat.facade.ts`) — wraps Telegram, Slack, WhatsApp, Discord, MS Teams, Google Chat, Mattermost, Rocket.Chat, LINE
 
@@ -93,7 +97,7 @@ await email.sendMessage(options);
 All connectors implement interfaces from `src/types/` that are exact replicas of Novu's `@novu/stateless` package:
 
 - `IEmailProvider` — `SesEmailConnector`, `ResendEmailConnector`, `MailgunEmailConnector`, `SendgridEmailConnector`, `PostmarkEmailConnector`, `MailerSendEmailConnector`, `MailtrapEmailConnector`, `BrevoEmailConnector`, `SparkPostEmailConnector`
-- `ISmsProvider` — `VonageSmsConnector`, `TwilioSmsConnector`, `PlivoSmsConnector`, `SnsSmsConnector`, `SinchSmsConnector`, `TelnyxSmsConnector`, `InfobipSmsConnector`, `MessageBirdSmsConnector`, `TextmagicSmsConnector`, `D7NetworksSmsConnector`
+- `ISmsProvider` — `VonageSmsConnector`, `TwilioSmsConnector`, `PlivoSmsConnector`, `SnsSmsConnector`, `SinchSmsConnector`, `TelnyxSmsConnector`, `InfobipSmsConnector`, `MessageBirdSmsConnector`, `TextmagicSmsConnector`, `D7NetworksSmsConnector`, `UnicellSmsConnector`, `SlngSmsConnector`, `UnforuSmsConnector`, `CellactSmsConnector`
 - `IPushProvider` — `FcmPushConnector`, `ExpoPushConnector`, `ApnsPushConnector`, `OneSignalPushConnector`, `PushoverPushConnector`, `PusherBeamsPushConnector`, `NtfyPushConnector`, `PushbulletPushConnector`, `WonderPushPushConnector`
 - `IChatProvider` — `TelegramChatConnector`, `SlackChatConnector`, `WhatsAppChatConnector`, `DiscordChatConnector`, `MsTeamsChatConnector`, `GoogleChatChatConnector`, `MattermostChatConnector`, `RocketChatChatConnector`, `LineChatConnector`
 
@@ -104,7 +108,7 @@ The `id` property on each connector matches Novu's provider enum values for drop
 The library exports Novu-compatible provider ID enums from `src/types/provider-id.enum.ts`:
 
 - `EmailProviderIdEnum` — `SES = 'ses'`, `Resend = 'resend'`, `Mailgun = 'mailgun'`, `Sendgrid = 'sendgrid'`, `Postmark = 'postmark'`, `MailerSend = 'mailersend'`, `Mailtrap = 'mailtrap'`, `Brevo = 'brevo'`, `SparkPost = 'sparkpost'`
-- `SmsProviderIdEnum` — `Nexmo = 'nexmo'`, `Twilio = 'twilio'`, `Plivo = 'plivo'`, `SNS = 'sns'`, `Sinch = 'sinch'`, `Telnyx = 'telnyx'`, `Infobip = 'infobip'`, `MessageBird = 'messagebird'`, `Textmagic = 'textmagic'`, `D7Networks = 'd7networks'`
+- `SmsProviderIdEnum` — `Nexmo = 'nexmo'`, `Twilio = 'twilio'`, `Plivo = 'plivo'`, `SNS = 'sns'`, `Sinch = 'sinch'`, `Telnyx = 'telnyx'`, `Infobip = 'infobip'`, `MessageBird = 'messagebird'`, `Textmagic = 'textmagic'`, `D7Networks = 'd7networks'`, `Unicell = 'unicell'`, `SLNG = 'slng'`, `Unforu = 'unforu'`, `Cellact = 'cellact'`
 - `PushProviderIdEnum` — `FCM = 'fcm'`, `EXPO = 'expo'`, `APNS = 'apns'`, `OneSignal = 'one-signal'`, `Pushover = 'pushover'`, `PusherBeams = 'pusher-beams'`, `Ntfy = 'ntfy'`, `Pushbullet = 'pushbullet'`, `WonderPush = 'wonderpush'`
 - `ChatProviderIdEnum` — `Telegram = 'telegram'`, `Slack = 'slack'`, `WhatsAppBusiness = 'whatsapp-business'`, `Discord = 'discord'`, `MsTeams = 'msteams'`, `GoogleChat = 'google-chat'`, `Mattermost = 'mattermost'`, `RocketChat = 'rocketchat'`, `LINE = 'line'`
 
@@ -127,17 +131,17 @@ These enums contain only IDs for implemented connectors. When adding a new conne
 
 ### Email Connectors
 
-| Connector  | API                                                                 | Auth                        | Format                   |
-|------------|---------------------------------------------------------------------|-----------------------------|--------------------------|
-| SES        | SES v2 `POST email.{region}.amazonaws.com/v2/email/outbound-emails` | AWS Sig V4 (`aws4`)        | JSON                     |
-| Resend     | `POST api.resend.com/emails`                                        | Bearer token               | JSON                     |
-| Mailgun    | `POST api.mailgun.net/v3/{domain}/messages`                         | Basic (`api:{key}`)        | form-encoded / multipart |
-| SendGrid   | `POST api.sendgrid.com/v3/mail/send`                                | Bearer token               | JSON                     |
-| Postmark   | `POST api.postmarkapp.com/email`                                    | `X-Postmark-Server-Token`  | JSON (PascalCase)        |
-| MailerSend | `POST api.mailersend.com/v1/email`                                  | Bearer token               | JSON                     |
-| Mailtrap   | `POST send.api.mailtrap.io/api/send`                                | Bearer token               | JSON                     |
-| Brevo      | `POST api.brevo.com/v3/smtp/email`                                  | `api-key` header           | JSON (camelCase)         |
-| SparkPost  | `POST api.sparkpost.com/api/v1/transmissions`                       | API key in Authorization   | JSON                     |
+| Connector  | API                                                                 | Auth                      | Format                   |
+|------------|---------------------------------------------------------------------|---------------------------|--------------------------|
+| SES        | SES v2 `POST email.{region}.amazonaws.com/v2/email/outbound-emails` | AWS Sig V4 (`aws4`)       | JSON                     |
+| Resend     | `POST api.resend.com/emails`                                        | Bearer token              | JSON                     |
+| Mailgun    | `POST api.mailgun.net/v3/{domain}/messages`                         | Basic (`api:{key}`)       | form-encoded / multipart |
+| SendGrid   | `POST api.sendgrid.com/v3/mail/send`                                | Bearer token              | JSON                     |
+| Postmark   | `POST api.postmarkapp.com/email`                                    | `X-Postmark-Server-Token` | JSON (PascalCase)        |
+| MailerSend | `POST api.mailersend.com/v1/email`                                  | Bearer token              | JSON                     |
+| Mailtrap   | `POST send.api.mailtrap.io/api/send`                                | Bearer token              | JSON                     |
+| Brevo      | `POST api.brevo.com/v3/smtp/email`                                  | `api-key` header          | JSON (camelCase)         |
+| SparkPost  | `POST api.sparkpost.com/api/v1/transmissions`                       | API key in Authorization  | JSON                     |
 
 **SES attachments:** Raw MIME message built in-memory, base64 encoded into `Content.Raw.Data`.
 **Mailgun attachments:** Multipart form-data with file parts. Falls back to URL-encoded for simple messages.
@@ -150,18 +154,22 @@ These enums contain only IDs for implemented connectors. When adding a new conne
 
 ### SMS Connectors
 
-| Connector   | API                                                              | Auth                         | Format                     |
-|-------------|------------------------------------------------------------------|------------------------------|----------------------------|
-| Vonage      | `POST rest.nexmo.com/sms/json`                                   | api_key + api_secret in body | form-encoded               |
-| Twilio      | `POST api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json`    | Basic (`SID:Token`)          | form-encoded               |
-| Plivo       | `POST api.plivo.com/v1/Account/{id}/Message/`                    | Basic (`ID:Token`)           | JSON                       |
-| SNS         | `POST sns.{region}.amazonaws.com/`                               | AWS Sig V4 (`aws4`)          | form-encoded, XML response |
-| Sinch       | `POST {region}.sms.api.sinch.com/xms/v1/{planId}/batches`       | Bearer token                 | JSON                       |
-| Telnyx      | `POST api.telnyx.com/v2/messages`                                | Bearer token                 | JSON                       |
-| Infobip     | `POST {baseUrl}/sms/3/messages`                                  | `App` auth prefix            | JSON (camelCase)           |
-| MessageBird | `POST rest.messagebird.com/messages`                             | `AccessKey` auth prefix      | JSON (camelCase)           |
-| Textmagic   | `POST rest.textmagic.com/api/v2/messages`                        | `X-TM-Username` + `X-TM-Key`| JSON (camelCase)           |
-| D7 Networks | `POST api.d7networks.com/messages/v1/send`                       | Bearer token                 | JSON                       |
+| Connector   | API                                                           | Auth                          | Format                     |
+|-------------|---------------------------------------------------------------|-------------------------------|----------------------------|
+| Vonage      | `POST rest.nexmo.com/sms/json`                                | api_key + api_secret in body  | form-encoded               |
+| Twilio      | `POST api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json` | Basic (`SID:Token`)           | form-encoded               |
+| Plivo       | `POST api.plivo.com/v1/Account/{id}/Message/`                 | Basic (`ID:Token`)            | JSON                       |
+| SNS         | `POST sns.{region}.amazonaws.com/`                            | AWS Sig V4 (`aws4`)           | form-encoded, XML response |
+| Sinch       | `POST {region}.sms.api.sinch.com/xms/v1/{planId}/batches`     | Bearer token                  | JSON                       |
+| Telnyx      | `POST api.telnyx.com/v2/messages`                             | Bearer token                  | JSON                       |
+| Infobip     | `POST {baseUrl}/sms/3/messages`                               | `App` auth prefix             | JSON (camelCase)           |
+| MessageBird | `POST rest.messagebird.com/messages`                          | `AccessKey` auth prefix       | JSON (camelCase)           |
+| Textmagic   | `POST rest.textmagic.com/api/v2/messages`                     | `X-TM-Username` + `X-TM-Key`  | JSON (camelCase)           |
+| D7 Networks | `POST api.d7networks.com/messages/v1/send`                    | Bearer token                  | JSON                       |
+| Unicell     | `POST restapi.soprano.co.il/api/Sms`                          | Credentials in JSON body      | JSON (PascalCase)          |
+| SLNG        | `POST slng5.com/Api/SendSmsJsonBody.ashx`                     | Credentials in JSON body      | JSON URL-encoded as form   |
+| InforU      | `POST api.inforu.co.il/SendMessageXml.ashx`                   | Credentials in XML body       | XML via form param         |
+| Cellact     | `POST cellactpro.net/GlobalSms/ExternalClient/GlobalAPI.asp`  | Credentials as XML attributes | XML via form param         |
 
 **Vonage quirk:** returns HTTP 200 even on errors — check `messages[0].status === '0'`.
 **SNS quirk:** XML response — `MessageId` extracted via regex, no XML parser.
@@ -172,20 +180,24 @@ These enums contain only IDs for implemented connectors. When adding a new conne
 **MessageBird quirk:** Auth uses `AccessKey` prefix. Body uses `originator` (not `from`) and `recipients` array.
 **Textmagic quirk:** Dual auth headers (`X-TM-Username`, `X-TM-Key`). Body uses `phones` for recipients.
 **D7 Networks quirk:** Body wraps in `messages` array with `channel: 'sms'` and `message_globals` for originator.
+**Unicell quirk:** Credentials (`UserName`, `Password`) in JSON body. PascalCase fields. `StatusCode: 0` means success. Message ID from `References[0].ReferenceNumber`.
+**SLNG quirk:** JSON body is URL-encoded and sent as `application/x-www-form-urlencoded`. `Status: true` means success. Message ID from `GeneralGUID`.
+**InforU quirk:** XML format via `InforuXML` form param. `<Status>1</Status>` means success. No message ID returned.
+**Cellact quirk:** PALO XML format via `xmlString` form param. Credentials as XML attributes on `<APP>`. Message ID from `<BLMJ>` element. `<RESULTCODE>0</RESULTCODE>` means success.
 
 ### Push Connectors
 
-| Connector    | API                                                                | Auth                      | Format        |
-|--------------|--------------------------------------------------------------------|---------------------------|---------------|
-| FCM          | FCM v1 `POST fcm.googleapis.com/v1/projects/{id}/messages:send`    | OAuth2 Bearer (RS256 JWT) | JSON          |
-| Expo         | `POST exp.host/--/api/v2/push/send`                                | Bearer token (optional)   | JSON          |
-| APNs         | `POST api.push.apple.com/3/device/{token}` (HTTP/2)                | Bearer JWT (ES256)        | JSON          |
-| OneSignal    | `POST api.onesignal.com/notifications`                             | `Key` header              | JSON          |
-| Pushover     | `POST api.pushover.net/1/messages.json`                            | Token in request body     | form-encoded  |
-| Pusher Beams | `POST {instanceId}.pushnotifications.pusher.com/publish_api/v1/instances/{instanceId}/publishes/interests/{interest}` | Bearer token | JSON |
-| ntfy         | `POST {baseUrl}/{topic}`                                           | Bearer token (optional)   | JSON          |
-| Pushbullet   | `POST api.pushbullet.com/v2/pushes`                                | `Access-Token` header     | JSON          |
-| WonderPush   | `POST management-api.wonderpush.com/v1/deliveries`                 | Query param `accessToken` | form-encoded  |
+| Connector    | API                                                                                                                   | Auth                      | Format       |
+|--------------|-----------------------------------------------------------------------------------------------------------------------|---------------------------|--------------|
+| FCM          | FCM v1 `POST fcm.googleapis.com/v1/projects/{id}/messages:send`                                                       | OAuth2 Bearer (RS256 JWT) | JSON         |
+| Expo         | `POST exp.host/--/api/v2/push/send`                                                                                   | Bearer token (optional)   | JSON         |
+| APNs         | `POST api.push.apple.com/3/device/{token}` (HTTP/2)                                                                   | Bearer JWT (ES256)        | JSON         |
+| OneSignal    | `POST api.onesignal.com/notifications`                                                                                | `Key` header              | JSON         |
+| Pushover     | `POST api.pushover.net/1/messages.json`                                                                               | Token in request body     | form-encoded |
+| Pusher Beams | `POST {instanceId}.pushnotifications.pusher.com/publish_api/v1/instances/{instanceId}/publishes/interests/{interest}` | Bearer token              | JSON         |
+| ntfy         | `POST {baseUrl}/{topic}`                                                                                              | Bearer token (optional)   | JSON         |
+| Pushbullet   | `POST api.pushbullet.com/v2/pushes`                                                                                   | `Access-Token` header     | JSON         |
+| WonderPush   | `POST management-api.wonderpush.com/v1/deliveries`                                                                    | Query param `accessToken` | form-encoded |
 
 **OneSignal quirk:** Auth uses `Key` prefix (not `Bearer`). Response is 200 even on "soft failure" — check `id` empty + `errors` array.
 **Pushover quirk:** Form-encoded request, JSON response. `status: 1` means success. Per-target sends via `Promise.allSettled()`. Returns `request` ID (not message ID).
@@ -196,17 +208,17 @@ These enums contain only IDs for implemented connectors. When adding a new conne
 
 ### Chat Connectors
 
-| Connector   | API                                                            | Auth                          | Format              |
-|-------------|----------------------------------------------------------------|-------------------------------|---------------------|
-| Telegram    | `POST api.telegram.org/bot{token}/sendMessage`                 | Bot token in URL path         | JSON                |
-| Slack       | `POST {webhookUrl}`                                            | None (URL is auth)            | JSON                |
-| WhatsApp    | `POST graph.facebook.com/v21.0/{phoneNumberId}/messages`       | Bearer token                  | JSON                |
-| Discord     | `POST discord.com/api/webhooks/{id}/{token}?wait=true`         | None (URL is auth)            | JSON                |
-| MS Teams    | `POST {webhookUrl}` (Power Automate Workflow URL)              | None (URL is auth)            | JSON (Adaptive Card)|
-| Google Chat | `POST {webhookUrl}`                                            | None (URL is auth)            | JSON                |
-| Mattermost  | `POST {webhookUrl}`                                            | None (URL is auth)            | JSON                |
-| Rocket.Chat | `POST {serverUrl}/api/v1/chat.sendMessage`                     | `X-Auth-Token` + `X-User-Id`  | JSON (camelCase)    |
-| LINE        | `POST api.line.me/v2/bot/message/push`                         | Bearer token                  | JSON (camelCase)    |
+| Connector   | API                                                      | Auth                         | Format               |
+|-------------|----------------------------------------------------------|------------------------------|----------------------|
+| Telegram    | `POST api.telegram.org/bot{token}/sendMessage`           | Bot token in URL path        | JSON                 |
+| Slack       | `POST {webhookUrl}`                                      | None (URL is auth)           | JSON                 |
+| WhatsApp    | `POST graph.facebook.com/v21.0/{phoneNumberId}/messages` | Bearer token                 | JSON                 |
+| Discord     | `POST discord.com/api/webhooks/{id}/{token}?wait=true`   | None (URL is auth)           | JSON                 |
+| MS Teams    | `POST {webhookUrl}` (Power Automate Workflow URL)        | None (URL is auth)           | JSON (Adaptive Card) |
+| Google Chat | `POST {webhookUrl}`                                      | None (URL is auth)           | JSON                 |
+| Mattermost  | `POST {webhookUrl}`                                      | None (URL is auth)           | JSON                 |
+| Rocket.Chat | `POST {serverUrl}/api/v1/chat.sendMessage`               | `X-Auth-Token` + `X-User-Id` | JSON (camelCase)     |
+| LINE        | `POST api.line.me/v2/bot/message/push`                   | Bearer token                 | JSON (camelCase)     |
 
 **Slack quirk:** Incoming webhooks return string `"ok"` — no message ID available.
 **WhatsApp quirk:** Response contains `messages` array — extract first `id`.

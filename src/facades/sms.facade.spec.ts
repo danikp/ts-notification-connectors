@@ -12,6 +12,10 @@ import { InfobipSmsConnector } from '../connectors/infobip';
 import { MessageBirdSmsConnector } from '../connectors/messagebird';
 import { TextmagicSmsConnector } from '../connectors/textmagic';
 import { D7NetworksSmsConnector } from '../connectors/d7networks';
+import { UnicellSmsConnector } from '../connectors/unicell';
+import { SlngSmsConnector } from '../connectors/slng';
+import { UnforuSmsConnector } from '../connectors/unforu';
+import { CellactSmsConnector } from '../connectors/cellact';
 
 vi.mock('../connectors/vonage');
 vi.mock('../connectors/twilio');
@@ -23,6 +27,10 @@ vi.mock('../connectors/infobip');
 vi.mock('../connectors/messagebird');
 vi.mock('../connectors/textmagic');
 vi.mock('../connectors/d7networks');
+vi.mock('../connectors/unicell');
+vi.mock('../connectors/slng');
+vi.mock('../connectors/unforu');
+vi.mock('../connectors/cellact');
 
 const MockedVonage = vi.mocked(VonageSmsConnector);
 const MockedTwilio = vi.mocked(TwilioSmsConnector);
@@ -34,6 +42,10 @@ const MockedInfobip = vi.mocked(InfobipSmsConnector);
 const MockedMessageBird = vi.mocked(MessageBirdSmsConnector);
 const MockedTextmagic = vi.mocked(TextmagicSmsConnector);
 const MockedD7Networks = vi.mocked(D7NetworksSmsConnector);
+const MockedUnicell = vi.mocked(UnicellSmsConnector);
+const MockedSlng = vi.mocked(SlngSmsConnector);
+const MockedUnforu = vi.mocked(UnforuSmsConnector);
+const MockedCellact = vi.mocked(CellactSmsConnector);
 
 const smsOptions: ISmsOptions = {
   to: '+1234567890',
@@ -126,6 +138,38 @@ describe('Sms facade', () => {
     expect(MockedD7Networks).toHaveBeenCalledWith(config);
   });
 
+  it('should instantiate UnicellSmsConnector for Unicell provider ID', () => {
+    const config = { username: 'user', password: 'pass', from: 'Sender' };
+    const facade = new Sms(SmsProviderIdEnum.Unicell, config);
+
+    expect(facade.id).toBe('unicell');
+    expect(MockedUnicell).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate SlngSmsConnector for SLNG provider ID', () => {
+    const config = { username: 'user', password: 'pass', from: '0501234567' };
+    const facade = new Sms(SmsProviderIdEnum.SLNG, config);
+
+    expect(facade.id).toBe('slng');
+    expect(MockedSlng).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate UnforuSmsConnector for Unforu provider ID', () => {
+    const config = { username: 'user', password: 'pass', from: 'Sender' };
+    const facade = new Sms(SmsProviderIdEnum.Unforu, config);
+
+    expect(facade.id).toBe('unforu');
+    expect(MockedUnforu).toHaveBeenCalledWith(config);
+  });
+
+  it('should instantiate CellactSmsConnector for Cellact provider ID', () => {
+    const config = { username: 'user', password: 'pass', from: 'Sender' };
+    const facade = new Sms(SmsProviderIdEnum.Cellact, config);
+
+    expect(facade.id).toBe('cellact');
+    expect(MockedCellact).toHaveBeenCalledWith(config);
+  });
+
   it('should accept a custom ISmsProvider connector', () => {
     const custom: ISmsProvider = {
       id: 'custom-sms',
@@ -139,7 +183,7 @@ describe('Sms facade', () => {
   });
 
   it('should throw for unsupported provider ID', () => {
-    expect(() => new Sms('unknown' as SmsProviderIdEnum, {} as any)).toThrow(
+    expect(() => new Sms('unknown' as any, {} as any)).toThrow(
       'Unsupported SMS provider: unknown',
     );
   });

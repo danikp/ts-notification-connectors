@@ -20,6 +20,14 @@ import { TextmagicSmsConnector } from '../connectors/textmagic';
 import type { TextmagicConfig } from '../connectors/textmagic';
 import { D7NetworksSmsConnector } from '../connectors/d7networks';
 import type { D7NetworksConfig } from '../connectors/d7networks';
+import { UnicellSmsConnector } from '../connectors/unicell';
+import type { UnicellConfig } from '../connectors/unicell';
+import { SlngSmsConnector } from '../connectors/slng';
+import type { SlngConfig } from '../connectors/slng';
+import { UnforuSmsConnector } from '../connectors/unforu';
+import type { UnforuConfig } from '../connectors/unforu';
+import { CellactSmsConnector } from '../connectors/cellact';
+import type { CellactConfig } from '../connectors/cellact';
 
 export class Sms implements ISmsProvider {
   readonly id: string;
@@ -37,6 +45,10 @@ export class Sms implements ISmsProvider {
   constructor(providerId: SmsProviderIdEnum.MessageBird, config: MessageBirdConfig);
   constructor(providerId: SmsProviderIdEnum.Textmagic, config: TextmagicConfig);
   constructor(providerId: SmsProviderIdEnum.D7Networks, config: D7NetworksConfig);
+  constructor(providerId: SmsProviderIdEnum.Unicell, config: UnicellConfig);
+  constructor(providerId: SmsProviderIdEnum.SLNG, config: SlngConfig);
+  constructor(providerId: SmsProviderIdEnum.Unforu, config: UnforuConfig);
+  constructor(providerId: SmsProviderIdEnum.Cellact, config: CellactConfig);
   constructor(
     providerIdOrConnector: SmsProviderIdEnum | ISmsProvider,
     config?:
@@ -49,7 +61,11 @@ export class Sms implements ISmsProvider {
       | InfobipConfig
       | MessageBirdConfig
       | TextmagicConfig
-      | D7NetworksConfig,
+      | D7NetworksConfig
+      | UnicellConfig
+      | SlngConfig
+      | UnforuConfig
+      | CellactConfig,
   ) {
     if (typeof providerIdOrConnector === 'object') {
       this.connector = providerIdOrConnector;
@@ -88,6 +104,18 @@ export class Sms implements ISmsProvider {
         break;
       case SmsProviderIdEnum.D7Networks:
         this.connector = new D7NetworksSmsConnector(config as D7NetworksConfig);
+        break;
+      case SmsProviderIdEnum.Unicell:
+        this.connector = new UnicellSmsConnector(config as UnicellConfig);
+        break;
+      case SmsProviderIdEnum.SLNG:
+        this.connector = new SlngSmsConnector(config as SlngConfig);
+        break;
+      case SmsProviderIdEnum.Unforu:
+        this.connector = new UnforuSmsConnector(config as UnforuConfig);
+        break;
+      case SmsProviderIdEnum.Cellact:
+        this.connector = new CellactSmsConnector(config as CellactConfig);
         break;
       default:
         throw new Error(`Unsupported SMS provider: ${providerIdOrConnector as string}`);
